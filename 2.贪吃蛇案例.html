@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		.map{
+			width: 960px;
+			height: 600px;
+			background-color: #C5ACAC;
+			position: relative;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="map"></div>
+	<script type="text/javascript">
+		(function(){
+			var elements = [];
+			// 用来存放吃了多少食物
+
+			function Food(x,y,width,height,color){
+				this.x = x || 0;
+                this.y = y || 0;
+                this.width = width || 20;
+                this.height = height || 20;
+                this.color = color || "blue";
+			}
+			// 设置食物的基本样式横纵坐标和宽高以及背景颜色，传值使用传值，不传使用默认的参数
+
+			Food.prototype.init = function(map){
+                remove();
+                // 调用删除函数，外部无法访问的
+
+                var food = document.createElement("DIV");
+                map.appendChild(food);
+                // 将食物添加到地图上
+                food.style.width = this.width + "px";
+                food.style.height = this.height + "px";
+                food.style.backgroundColor = this.color;
+                // 设置基本样式，注意JS中不能设置连字符样式，要用驼峰原则，不然报Invalid left-hand side in assignment
+
+                food.style.position = "absolute";
+                this.x = parseInt(Math.random()*(map.offsetWidth/this.width)) * this.width;
+                this.y = parseInt(Math.random()*(map.offsetHeight/this.height)) * this.height;
+                food.style.left = this.x + "px";
+                food.style.top = this.y + "px";
+
+                elements.push(food);
+                // 把生成的div添加到elements数组中
+			}
+            // 为食物的原型对象添加初始化的方法，这里没有传入参数使用默认的值
+
+            function remove(){
+            	for(var i=0; i<elements.length; i++){
+            		var ele = elements[i];
+            		ele.parentNode.removeChild(ele);
+            		// 找到数组中的父元素后再删除其子元素，来删除这个元素，这是map中的元素
+            		elements.splice(i,1);
+            		// 通过数组操作，在数组中的这个元素
+            	}
+            }
+
+			window.Food = Food;
+			// 将自调用函数内部声明的局部的函数，赋给浏览器的顶级对象window，转换为全局函数
+		}());
+		// 函数自调用的方式创建食物，必须要写分号，不然浏览器这个不能和function()这种分开，造成各种错误
+
+		(function(){
+            var elements = [];
+            // 存放贪吃蛇身体的部分
+
+			function Snake(width,height,direction){
+				this.width = width || 20;
+			    this.height = height || 20;
+			    // 贪吃蛇每个部分的宽高
+
+			    this.body = [
+			      {x:3,y:2,color:"red"},
+			      {x:2,y:2,color:"green"},
+			      {x:1,y:2,color:"green"}    
+			    ];
+			    // 贪吃蛇的身体，因为要不断的变大，所以放在数组中
+
+			    this.direction = direction || "right";
+			    // 贪吃蛇前进的方向
+			}
+			// 构建贪吃蛇
+
+		    Snake.prototype.init = function(map){
+                remove();
+                // 每次创建贪吃蛇，删除前面一条，这里是调用下面创建
+
+		    	for(var i=0; i<this.body.length; i++){
+		    		var obj = this.body[i];
+		    		// 获取设置的样式原来的对象
+		    		var snackBody = document.createElement("DIV");
+
+		    	    map.appendChild(snackBody);
+	    	    	snackBody.style.position = "absolute";
+	    	    	snackBody.style.width = this.width + "px";
+	    	    	snackBody.style.height = this.height + "px";
+	    	    	// 基本样式
+
+	    	    	snackBody.style.left = obj.x * this.width + "px";
+	    	    	snackBody.style.top = obj.y * this.height + "px";
+	    	    	snackBody.style.backgroundColor = obj.color;
+	    	    	// 将特定的坐标位置和颜色复制下来
+
+	    	    	elements.push(snackBody);
+	    	    	// 将贪吃蛇对象存放到数组中
+		    	}
+
+		    	function remove(){
+                    var i = elements.length -1;
+                    for(i; i>=0; i--){
+                    	var ele = elements[i];
+                    	ele.parentNode.removeChild(ele);
+                    	elements.splice(i,1);
+                    }
+		    	}
+		    	// 从后往前删除贪吃蛇，用户看到的加长部分是原来贪吃蛇的蛇尾部分
+		    }
+		    // 为小蛇对象的原型对象添加方法，每次贪吃蛇移动的时候，删除之前的创建新的，利用原型节省内存	
+
+		    Snake.prototype.move = function(food,map){
+		    	var i = this.body.length - 1;
+		    	// 除了头部
+		    	for( i; i>0; i--){
+		    		this.body[i].x = this.body[i-1].x;
+		    		this.body[i].y = this.body[i-1].y;
+		    	}
+		    	// 头部后面的，当移动一下，后面的小方块占用前面的小方块的位置
+
+		    	switch(this.direction){
+		    		case "right":this.body[0].x += 1;break;
+		    		case "left":this.body[0].x -= 1;break;
+		    		case "up":this.body[0].y -= 1;break;
+		    		case "down":this.body[0].y += 1;break;
+		    	}
+		    	// 头部小方块根据方向决定坐标的改变
+
+		    	var headX = this.body[0].x * this.width;
+		    	var headY = this.body[0].y * this.height;
+		    	// 获取贪吃蛇的头部的坐标
+		    	var foodX = food.x;
+		    	var foodY = food.y;
+		    	// 获取食物的坐标位置
+		    	if(headX == foodX && headY == foodY){
+		    		var last = this.body[this.body.length-1];
+		    		// 获取贪吃蛇蛇尾元素
+		    		this.body.push({
+		    			 x:last.x,
+		    			 y:last.y,
+		    			 color:last.color
+		    		});
+		    		// 当蛇头跟食物的坐标一致时，在最后添加上一步获取的元素，此时蛇尾两个元素重合
+		    		food.init(map);
+		    		// 重新初始化，这个函数调用时，会删除之前的元素
+		    	}
+		    }	
+
+		    window.Snake = Snake;
+		    // 将贪吃蛇对象给浏览器顶级对象
+		}());
+		// 函数自调用的方式创建贪吃蛇
+
+		(function(){
+            var that = null;
+            //用来替代定时器使用的this，造成的幺蛾子 
+
+			function Game(map){
+				this.food = new Food();
+				this.snack = new Snake();
+				this.map = map;
+				// 一个游戏对象，需要食物，贪吃蛇和地图三个对象
+				that = this;
+				// 用that指代调用的对象
+			}
+			Game.prototype.init = function(){
+				this.food.init(this.map);
+				this.snack.init(this.map);
+                // 初始化食物和贪吃蛇
+
+                this.runSnake(this.food,this.map);
+                this.bindKey();				
+			}
+
+			Game.prototype.runSnake = function(food,map){
+				var intervalName = setInterval(function(){
+                  this.snack.move(food,map);
+                  this.snack.init(map);
+                  // this指代的是浏览器顶级对象window
+
+                  var maxX = map.offsetWidth/this.snack.width;
+                  var maxY = map.offsetHeight/this.snack.height;
+                  // 蛇能移动到的最大的坐标
+                  var headX = this.snack.body[0].x;
+                  var headY = this.snack.body[0].y;
+
+                  if(headX<0 || headX>=maxX){
+                  	clearInterval(intervalName);
+                  	alert("Game Over!");
+                  }
+                  if(headY<0 || headY>=maxY){
+                  	clearInterval(intervalName);
+                  	alert("Game Over!");
+                  }
+				}.bind(that),100);
+				// 自动移动的方法.这里的this，指代的是window，用.bind()方法进行对象的更换
+			}
+
+			Game.prototype.bindKey = function(){
+                document.addEventListener("keydown",function(e){
+                	switch (e.keyCode){
+                		// .keyCode表示键盘码
+                		case 37:this.snack.direction = "left";break;
+                		case 38:this.snack.direction = "up";break;
+                		case 39:this.snack.direction = "right";break;
+                		case 40:this.snack.direction = "down";break;
+                	}
+                }.bind(that),false)
+                // 同样的，这里面使用this关键字的话，指代的是触发键盘弹起事件的对象，用that替换
+			};
+			// 改变贪吃蛇移动的方向
+               
+			window.Game = Game;
+			// 设为全局对象
+		}());
+
+
+		var gm = new Game(document.querySelector(".map"));
+		gm.init();
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		function Person(name,qq){
+			this.name = name;
+			this.qq = qq;
+		}
+		Person.prototype.show = function(){
+			console.log("陈小帅是真的帅");
+		}
+		function Student(name,qq,num){
+			Person.call(this,name,qq);
+			this.num = num;
+			// 借用构造函数，通过.call(当前对象,参数1，参数2，参数3等);	
+		}
+
+		Student.prototype = new Person();
+
+		Student.prototype.say = function(){
+			console.log("没错我就是陈小帅")
+		}
+
+		var stu = new Student("陈帅帅",2323010676,160720131);
+		console.log(stu.name,stu.qq,stu.num);
+		stu.show();
+		stu.say();
+
+	</script>
+	
+</body>
+</html>

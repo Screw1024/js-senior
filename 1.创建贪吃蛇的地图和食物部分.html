@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		.map{
+			width: 960px;
+			height: 600px;
+			background-color: #C5ACAC;
+			position: relative;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="map"></div>
+	<script type="text/javascript">
+		(function(){
+			function Random(){}
+			Random.prototype.getRandom = function(min,max){
+				return Math.floor(Math.random() * (max-min) + min);
+				// 随机数是0到1之间的范围 .floor()向下取整
+			}
+			// 在自定义的局部变量Random对象中添加getRandom方法
+            window.Random = new Random();
+            // 将局部对象Random暴露给浏览器的顶级对象window，这样这个对象就成了全局对象	
+            }
+    )(window);
+    // 函数自调用的方式，分号一定要加上，第一个()中定义函数，第二个()传参
+
+    (function(){
+    	var map = document.querySelector(".map");
+    	// DOM中的选择器来获取元素对象
+
+    	function Food(width,height,color){
+            this.width = width || 20;
+            this.height = height || 20;
+            // 如果传入小方块的宽高则按照传入的宽高显示，如果不传入默认宽高都为20
+
+            this.x = 0;
+            this.y = 0;
+            this.color = color;
+            // 默认的起始位置在左上角，颜色接收得来
+
+            this.element = document.createElement("div");
+            // 创建食物小方块对象，也可以写在下面的 var food前面，但是会
+            // 重新开辟空间，达不到节省内存的目的，这样写不会开辟空间，只需修改样式即可
+    	}
+
+        Food.prototype.init = function(map){
+            var food = this.element;
+            // 上一步创建小方块的名字
+            food.style.position = "absolute";
+            food.style.width = this.width + "px";
+            food.style.height = this.height + "px";
+            food.style.backgroundColor = this.color;
+            // 设置食物小方块的样式
+            map.appendChild(food);
+            // 在地图上添加食物对象的子级对象
+            this.render(map);
+            // 原型方法中调用另一个此原型对象的方法
+        }
+        
+        Food.prototype.render = function(map){
+            var x = Random.getRandom(0,map.offsetWidth/this.width)*this.width;
+            var y = Random.getRandom(0,map.offsetHeight/this.height)*this.height;
+            // 产生横纵坐标的随机数，最小值为0，分为地图的宽度除以食物的宽度等份，再乘以食物宽高
+
+            this.x = x;
+            this.y = y;
+            var div = this.element;
+            div.style.left = this.x + "px";
+            div.style.top = this.y + "px";
+            // 食物的位置赋值 
+        }
+        // 为食物设置随机位置
+
+        var fd = new Food(20,20,"blue");
+        fd.init(map);
+    })();
+	</script>
+</body>
+</html>

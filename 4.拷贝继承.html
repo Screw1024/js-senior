@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		var obj1 = {
+			name:"陈小帅",
+			show:function(){
+				console.log("陈小帅帅的不行");
+			}
+		}
+
+		var obj2 = obj1;
+		// 直接把obj2的指针指向obj1的内存空间,达到拷贝的目的
+		console.log(obj2.name);
+		obj2.show();
+        
+
+        // 上面一种，通过把obj2的指针指向obj1的内存达到拷贝的效果
+        // 下面一种，通过遍历复制前一个对象的属性和方法达到拷贝的效果
+
+
+        function Person(){
+
+        }
+        function Student(){
+
+        }
+
+        Person.prototype.qq = 3199578835,
+        Person.prototype.show = function(){
+        	console.log("you are so cool");
+        }
+        
+        var obj3 = new Student();
+        for(var key in Person.prototype){
+        	obj3[key] = Person.prototype[key];
+        } 
+        // 将Person对象中的每次属性或方法遍历复制到obj3中
+
+		console.log(obj3.qq);
+		obj3.show();
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+    ul {
+      list-style-type: none;
+      width: 70%;
+      margin: 100px 300px;
+    }
+
+    li {
+      float: left;
+      margin-left: 10px;
+    }
+
+    img {
+      width: 200px;
+      height: 180px;
+    }
+
+    input {
+      margin-left: 30%;
+    }
+  </style>
+</head>
+ <body>
+	<ul>
+	  <li><img src="images/01.jpg"><br/><input type="button" value="赞(0)"></li>
+	  <li><img src="images/02.jpg"><br/><input type="button" value="赞(0)"></li>
+	  <li><img src="images/03.jpg"><br/><input type="button" value="赞(0)"></li>
+	  <li><img src="images/04.jpg"><br/><input type="button" value="赞(0)"></li>
+	</ul>
+	
+	<script type="text/javascript">
+		function myGet(tagName){
+			return document.getElementsByTagName(tagName);
+		}
+
+		function getValue(){
+			var value = 1;
+			return function(){
+				this.value = "赞(" + (value++) + ")";
+				// 字符串拼接，都是通过 变量将字符串分为左右两个部分
+                // ++在前先加后用，++在后先用后加，也就是上面为什么定义value为1
+			}
+		}
+		// 通过闭包缓冲数据，基本上需要闭包缓冲数据，都是通过返回函数的值实现的
+
+		var btnObjs = myGet("input");
+		// 获取所有的按钮
+
+		for(var i=0; i<btnObjs.length; i++){
+			btnObjs[i].onclick = getValue();
+			// getValue()返回值直接是图片下面的字符串，为每个按钮添加事件
+		}
+		// 每个按钮的内存空间位置是不同的，所有他们的对应的闭包的value的缓存值也是不一样的
+		// 每次点击不同的按钮，获取不同的value值，才能实现分开点赞
+	</script>
+ </body>
+</html>

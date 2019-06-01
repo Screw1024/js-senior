@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		function CreateRandom(){
+			this.number = parseInt(Math.random() * 10 + 1);
+		}
+		// random()产生随机数在0-1之间
+
+		CreateRandom.prototype.show1 = function(){
+            window.setInterval(this.show2.bind(this),1000);
+            // show2方法中的打印语句指代的原来是调用定时器的对象window，
+            // 通过bind()方法传入的this，指代当前的调用的bind方法的CreateRandow对象
+            // show2前面的this指代的是window，后面的this指代的是CreateRandow注意理解作用域
+
+            // console.log(this);
+            // 通过这句可以测试这里的this指向
+		}  
+		CreateRandom.prototype.show2 = function(){
+			console.log(this.number);
+		}
+
+		var sr = new CreateRandom();
+		sr.show1(); 
+
+	</script>
+</body>
+</html>

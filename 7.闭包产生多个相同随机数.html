@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		function showRandom(){
+			var num = parseInt(Math.random()*10 + 1);
+			console.log(num);
+		}
+
+        showRandom();
+        showRandom();
+        showRandom();
+
+        function showRandom2(){
+        	var num2 = parseInt(Math.random()*10 + 1);
+            return function(){
+            	console.log(num2);
+            }
+            // 函数模式闭包，将num2的值缓存在内存中
+        }
+        var ff = showRandom2();
+        ff();
+        ff();
+        ff();
+
+        // showRandom2();   
+        // 不能这样写，无法调用，因为有返回值，需要接收
+        
+	</script>
+</body>
+</html>
